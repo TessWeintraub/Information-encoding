@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Шифрование</title>
+</head>
+<body class="body">
+    <div class="cont">
+        <div class="cont_coding ">
+            <h1 class="name">Шифрование информации</h1>
+
+            <textarea class="coding_text" placeholder="Введите текст" required></textarea>
+
+            <div class="form_password">
+                <label class="label">Пароль:</label>
+                <input type="password" class="coding_password" placeholder="Введите пароль" onchange="getPassword()" required>
+            </div>
+
+            <button class="coding_button" onclick="coding()">Кодировать</button>
+        </div>
+
+
+        <div class="cont_transfer display">
+
+            <h1 class="name">Шифрование информации</h1>
+
+            <div class="form_transfer">
+                <textarea class="transfer_text" readonly></textarea>
+                <button class="button_copy" onclick="Copy(coding().inputTextCoding)">©</button>
+            </div>
+
+            <div class="form_password">
+                <label class="label">Пароль:</label>
+                <textarea class="transfer_password" readonly></textarea>
+                <button class="button_copy" onclick="Copy(coding().password)">©</button>
+            </div>
+
+            <button class="transfer_button" onclick="transfer()">Далее</button>
+
+        </div>
+
+
+        <div class="cont_decoding display">
+
+            <h1 class="name">Шифрование информации</h1>
+
+            <textarea class="decoding_text"></textarea>
+
+            <div class="form_password">
+                <label class="label">Пароль:</label>
+                <input type="password" class="decoding_password" placeholder="Введите пароль" value="">
+            </div>
+
+            <button class="decoding_button" onclick="decoding()">Декодировать</button>
+
+        </div>
+
+        <div class="cont_output display">
+
+            <h1 class="name">Шифрование информации</h1>
+
+            <div class="form_output">
+                <textarea class="output_text" style="height: 100%" readonly></textarea>
+                <button class="button_copy" onclick="Copy(decoding())">©</button>
+            </div>
+
+
+            <button class="output_button" onclick="window.close()">Завершить</button>
+
+        </div>
+    </div>
+
+    <script defer>
+        let password = ""
+        getPassword = () => {
+            password = document.querySelector(".coding_password").value
+            return password
+        }
+        const coding = () =>{
+
+            let inputTextCoding = document.querySelector(".coding_text").value;
+
+            if (getPassword()){
+                console.log(inputTextCoding);
+                inputTextCoding = inputTextCoding.replaceAll('\t', 'ﹶ').replaceAll('\n','´');
+                inputTextCoding = inputTextCoding.split('');
+                console.log(inputTextCoding);
+                inputTextCoding.forEach(function (item, i) {
+                    if((inputTextCoding[i]!='ﹶ')&(inputTextCoding[i]!='´')){
+                    inputTextCoding[i] = String.fromCharCode(inputTextCoding[i].charCodeAt(0)+3);
+                    }
+                });
+            }
+            else{
+                alert("Вы не ввели пароль!");
+                return;
+            }
+            inputTextCoding = inputTextCoding.reverse();
+            inputTextCoding = inputTextCoding.join('');
+            document.querySelector(".cont_coding").classList.add("display");
+            document.querySelector(".cont_transfer").classList.remove("display");
+            document.querySelector(".transfer_text").innerHTML = inputTextCoding;
+            document.querySelector(".transfer_password").innerHTML = password;
+
+            return ({password,inputTextCoding});
+
+        }
+        const transfer = () =>{
+            document.querySelector(".cont_transfer").classList.add("display");
+            document.querySelector(".cont_decoding").classList.remove("display");
+            return;
+         }
+        const decoding = () => {
+
+            let inputTextDecoding = document.querySelector(".decoding_text").value;
+            let passwordValid = document.querySelector(".decoding_password").value;
+            let outputText = ""
+
+                if (passwordValid == getPassword()) {
+                    inputTextDecoding = inputTextDecoding.replaceAll('ﹶ','\t' ).replaceAll('´','\n');
+                    inputTextDecoding = inputTextDecoding.split('');
+                    inputTextDecoding = inputTextDecoding.reverse();
+                    inputTextDecoding.forEach(function (item, i) {
+                        if((inputTextDecoding[i]!='\n')&(inputTextDecoding[i]!='\t')){
+                            inputTextDecoding[i] = String.fromCharCode(inputTextDecoding[i].charCodeAt(0) - 3);
+                        }
+                    });
+                    outputText = inputTextDecoding.join('');
+
+                } else if (!Boolean(passwordValid)) {
+                    alert("Вы не ввели пароль!");
+                    document.querySelector(".decoding_password").value = "";
+                    return;
+                } else {
+                    alert("Пароль не верный!");
+                    document.querySelector(".decoding_password").value = "";
+                    return;
+                }
+            document.querySelector(".cont_transfer").classList.add("display");
+            output(outputText);
+            return outputText;
+            }
+
+
+
+        const output = (outputText) => {
+            document.querySelector(".cont_decoding").classList.add("display");
+            document.querySelector(".cont_output").classList.remove("display");
+            document.querySelector(".output_text").innerHTML = outputText;
+            return outputText;
+        }
+        const Copy = (item) =>  {
+            navigator.clipboard.writeText(item)
+                .then(() => {
+                    // Получилось!
+                })
+                .catch(err => {
+                    console.log('Error ', err);
+                });
+        }
+    </script>
+
+    <style>
+
+        .cont{
+            padding: 0px;
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        h1{
+            text-align: center;
+        }
+        .cont_coding, .cont_transfer, .cont_decoding, .cont_output{
+            display: flex;
+            border: 1px solid black;
+            border-radius: 23px;
+            width: 30%;
+            height: 400px;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .coding_text,.decoding_text, .output_text{
+            width: 70%;
+            height: 40%;
+            padding: 10px;
+            resize: none;
+            border-radius: 10px;
+        }
+
+
+        .form_transfer, .form_output{
+            width: 70%;
+            height: 40%;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+        .transfer_text{
+            width: 70%;
+            height: 100%;
+            padding: 10px;
+            resize: none;
+            border-radius: 10px;
+        }
+        .form_password{
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 70%;
+        }
+        .button_copy{
+            background-color: white;
+            font-size: 20px;
+            border: 1px solid black;
+            border-radius: 5px;
+            margin: 1px;
+        }
+        .button_copy:active{
+            border: 2px solid black;
+            margin: 0px;
+
+        }
+
+        .label{
+            font-size: 20px;
+            margin-right: 5px;
+        }
+        .coding_password, .decoding_password{
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid black;
+            width: 75%;
+            text-align: center;
+            resize: none;
+        }
+
+        .transfer_password{
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid black;
+            height: 15px;
+            width: 60%;
+            text-align: center;
+            resize: none;
+        }
+        .coding_button,.transfer_button, .decoding_button, .output_button{
+            font-size: 16px;
+            background-color: white;
+            padding: 5px;
+            width: 70%;
+            margin: 1px;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+        .coding_button:active, .decoding_button:active{
+            border: 2px solid black;
+            margin: 0px;
+        }
+        .display{
+            display: none;
+
+        }
+
+        @media screen and (max-width: 1366px) {
+            .name{
+                font-size: 20px;
+            }
+            .label{
+                font-size: 12px;
+            }
+            .coding_button, .decoding_button{
+                font-size: 12px;
+            }
+        }
+    </style>
+
+
+</body>
+</html>
